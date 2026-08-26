@@ -252,7 +252,7 @@ def page_chrome(canvas, doc) -> None:
     canvas.setFillColor(MUTED)
     canvas.drawString(doc.leftMargin, height - 18, "CLOSED-INTRANET VIM SETUP - PRINTABLE SETUP GUIDE")
     canvas.drawRightString(width - doc.rightMargin, 16, f"Page {doc.page}")
-    canvas.drawString(doc.leftMargin, 16, "Generated from the repository source; code lines are numbered for checking only.")
+    canvas.drawString(doc.leftMargin, 16, "Generated from the repository source; line numbers are for reference only.")
     canvas.restoreState()
 
 
