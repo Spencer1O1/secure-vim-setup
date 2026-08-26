@@ -14,8 +14,6 @@ xnoremap <leader>d "_d
 xnoremap J :move '>+1<CR>gv=gv
 " Visual K moves the selected lines upward and keeps them selected.
 xnoremap K :move '<-2<CR>gv=gv
-" Y yanks from the cursor through the end of the line.
-nnoremap Y yg$
 " J joins lines without losing the current cursor position.
 nnoremap J mzJ`z
 " Ctrl-d scrolls down half a page and recenters the cursor.
@@ -31,6 +29,9 @@ nnoremap Q <Nop>
 " <Leader>r prepares a whole-file replacement of the word under the cursor.
 nnoremap <leader>r :%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>
 
+" Yank and clipboard mappings.
+" Y yanks from the cursor through the end of the line.
+nnoremap Y yg$
 if has('clipboard')
   set clipboard=unnamedplus
   " <Leader>y starts a normal-mode yank into the system clipboard.
@@ -41,18 +42,6 @@ if has('clipboard')
   nnoremap <leader>Y "+yg$
   " <Leader><Ctrl-y> copies the entire file to the system clipboard.
   nnoremap <silent> <leader><C-y> :%yank +<CR>
-else
-  " <Leader>y still starts a normal yank when this Vim lacks clipboard support.
-  nnoremap <leader>y y
-  " <Leader>y still copies the visual selection when clipboard support is absent.
-  xnoremap <leader>y y
-  " <Leader>Y still copies from the cursor through line end without moving first.
-  nnoremap <leader>Y yg$
-  " <Leader><Ctrl-y> yanks the entire file normally when no system clipboard exists.
-  nnoremap <silent> <leader><C-y> :%yank<CR>
-endif
-
-if has('clipboard')
   " Ctrl-v pastes the system clipboard after the cursor in normal mode.
   nnoremap <C-v> "+p
   " Ctrl-v replaces the visual selection with the system clipboard.
@@ -63,6 +52,15 @@ if has('clipboard')
   nnoremap <C-c> "+yy
   " Ctrl-c copies the visual selection to the system clipboard.
   xnoremap <C-c> "+y
+else
+  " <Leader>y still starts a normal yank when this Vim lacks clipboard support.
+  nnoremap <leader>y y
+  " <Leader>y still copies the visual selection when clipboard support is absent.
+  xnoremap <leader>y y
+  " <Leader>Y still copies from the cursor through line end without moving first.
+  nnoremap <leader>Y yg$
+  " <Leader><Ctrl-y> yanks the entire file normally when no system clipboard exists.
+  nnoremap <silent> <leader><C-y> :%yank<CR>
 endif
 
 " <Leader>f starts a recursive file search using the configured 'path'.

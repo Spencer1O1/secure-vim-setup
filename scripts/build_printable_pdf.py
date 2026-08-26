@@ -225,11 +225,7 @@ def make_styles() -> dict[str, ParagraphStyle]:
         ),
         "cheat_title": ParagraphStyle(
             "CheatTitle", parent=base["Title"], fontName="Helvetica-Bold", fontSize=21,
-            leading=24, textColor=NAVY, spaceAfter=3,
-        ),
-        "cheat_subtitle": ParagraphStyle(
-            "CheatSubtitle", parent=base["Normal"], fontName="Helvetica", fontSize=8.5,
-            leading=11, textColor=MUTED, spaceAfter=9,
+            leading=24, textColor=NAVY, spaceAfter=12,
         ),
         "cheat_section": ParagraphStyle(
             "CheatSection", parent=base["Heading3"], fontName="Helvetica-Bold", fontSize=9,
@@ -328,13 +324,20 @@ def add_cheat_sheet(story: list, styles: dict[str, ParagraphStyle]) -> None:
                 ("<Leader>q", "Quit the current window"),
                 ("<Leader>Q", "Quit and abandon unsaved changes"),
                 ("<Leader>d", "Delete without replacing a register"),
-                ("<Leader>y", "Yank a motion or visual selection"),
-                ("<Leader>Y", "Yank from cursor through line end"),
-                ("<Leader>yy", "Yank the entire current line"),
-                ("<Leader><Ctrl-y>", "Yank whole file to system clipboard"),
                 ("<Leader>r", "Replace word under cursor across file"),
                 ("<Leader>lf", "Reindent file or visual selection"),
                 ("<Leader>u", "Show built-in undo history"),
+            ]),
+            ("Yank and clipboard", [
+                ("y", "Yank a motion or visual selection"),
+                ("yy", "Yank the entire current line"),
+                ("Y", "Yank from cursor through line end"),
+                ("<Leader>", "Add before y, yy, or Y for system clipboard"),
+                ("<Leader><Ctrl-y>", "Yank the entire file"),
+                ("Ctrl-c", "Copy line or visual selection (+clipboard)"),
+                ("Ctrl-v", "Paste system clipboard (+clipboard)"),
+                ("+clipboard", "Leader yanks use system clipboard"),
+                ("-clipboard", "Leader yanks use normal register"),
             ]),
             ("Completion and insert", [
                 ("Ctrl-n", "Open menu or select next candidate"),
@@ -344,15 +347,13 @@ def add_cheat_sheet(story: list, styles: dict[str, ParagraphStyle]) -> None:
                 ("Enter", "Newline; expands empty pairs/tags"),
                 ("() [] {}", "Openers pair; closers move over a match"),
                 ("'  \"  >", "Quotes and tag closers are context aware"),
-                ("Backspace", "Inside an empty pair, remove both sides"),
+                ("Backspace", "Remove both sides of empty pair/tag"),
             ]),
         ],
         [
             ("Files and help", [
                 ("<Leader>f", "Find a file recursively"),
                 ("<Leader>b", "Choose an open buffer"),
-                ("<Leader>e", "Open netrw file explorer"),
-                ("Esc", "From netrw, return without selecting"),
                 ("<Leader>?", "Open Vim help with completion"),
                 ("<Leader>cd", "Set window directory to project root"),
             ]),
@@ -382,11 +383,22 @@ def add_cheat_sheet(story: list, styles: dict[str, ParagraphStyle]) -> None:
                 ("<Leader>h", "List all four pins"),
                 ("<Leader>hc", "Clear all four pins"),
             ]),
+            ("Netrw essentials", [
+                ("<Leader>e", "Open netrw in current window"),
+                ("Enter / -", "Open or enter / parent directory"),
+                ("Esc", "Return without selecting"),
+                ("% / d", "Create file / directory"),
+                ("R / D", "Rename / delete"),
+                ("i", "Cycle thin, long, wide, and tree views"),
+                ("s / r", "Choose sort field / reverse order"),
+                ("gh", "Toggle dotfiles"),
+                ("mf / mu", "Mark file / clear all marks"),
+                ("mt + mc/mm", "Set target, then copy / move marks"),
+            ]),
             ("Movement and editing", [
                 ("Ctrl-d/u", "Half-page down / up, recentered"),
                 ("Visual J/K", "Move selected lines down / up"),
                 ("J", "Join lines without losing cursor position"),
-                ("Y", "Yank from cursor through line end"),
             ]),
             ("Useful commands", [
                 (":source %", "Reload the current Vim module"),
@@ -397,10 +409,6 @@ def add_cheat_sheet(story: list, styles: dict[str, ParagraphStyle]) -> None:
                 (":copen", "Open quickfix results"),
                 (":earlier", "Move backward through undo history"),
                 (":later", "Move forward through undo history"),
-            ]),
-            ("Clipboard behavior", [
-                ("+clipboard", "All Leader yanks can use system clipboard"),
-                ("-clipboard", "All Leader yanks use Vim's normal register"),
             ]),
         ],
     ]
@@ -414,10 +422,6 @@ def add_cheat_sheet(story: list, styles: dict[str, ParagraphStyle]) -> None:
 
     story.extend([
         Paragraph("Vim keybinding cheat sheet", styles["cheat_title"]),
-        Paragraph(
-            "Leader defaults to Space but may be changed. Capital letters mean hold Shift. Bracket pairs read as previous / next. This page is intentionally isolated for one-sheet printing.",
-            styles["cheat_subtitle"],
-        ),
         Table(
             [rendered_columns],
             colWidths=[3.18 * inch, 3.18 * inch, 3.18 * inch],
@@ -441,7 +445,7 @@ def build_pdf() -> None:
         str(TMP_PDF), pagesize=landscape(letter),
         leftMargin=0.48 * inch, rightMargin=0.48 * inch,
         topMargin=0.44 * inch, bottomMargin=0.38 * inch,
-        title="Closed-intranet Vim setup - printable retyping guide",
+        title="Closed-intranet Vim setup - printable setup guide",
         author="secure-vim-setup",
         subject="README and complete plugin-free Vim configuration source",
     )

@@ -28,27 +28,40 @@ function! s:QuotePair(quote)
   return a:quote.a:quote."\<Left>"
 endfunction
 
-function! s:PairBackspace()
-  let pair = s:CharBefore().s:CharAfter()
-  return index(['()', '[]', '{}', '""', "''"], pair) >= 0 ? "\<BS>\<Del>" : "\<BS>"
-endfunction
-
-function! s:IsMatchingTagPair()
+function! s:MatchingTagPairWidths()
   let before = strpart(getline('.'), 0, col('.') - 1)
   let after = strpart(getline('.'), col('.') - 1)
   " Attribute values may themselves contain < or > (common in templates).
   let opening = matchstr(before,
         \ "<[A-Za-z]\\%([^<>\"']\\|\"[^\"]*\"\\|'[^']*'\\)*>\\s*$")
   if empty(opening) || opening =~# '/>\s*$'
-    return 0
+    return []
   endif
   let tag = matchstr(opening, '^<\zs[A-Za-z][A-Za-z0-9:_-]*')
   if empty(tag)
-    return 0
+    return []
   endif
-  let closing = '^\s*</'.escape(tag, '\').'\s*>'
-  return &l:filetype =~# '^\%(xml\|xhtml\)$'
-        \ ? after =~# closing : after =~? closing
+  let closing_pattern = '^\s*</'.escape(tag, '\').'\s*>'
+  " XML names are case-sensitive; HTML-like names are not.
+  let closing = matchstr(after,
+        \ (&l:filetype ==# 'xml' ? '\C' : '\c').closing_pattern)
+  return empty(closing) ? [] : [strchars(opening), strchars(closing)]
+endfunction
+
+function! s:PairBackspace()
+  let pair = s:CharBefore().s:CharAfter()
+  if index(['()', '[]', '{}', '""', "''"], pair) >= 0
+    return "\<BS>\<Del>"
+  endif
+  let tag_widths = s:MatchingTagPairWidths()
+  if !empty(tag_widths)
+    return repeat("\<BS>", tag_widths[0]).repeat("\<Del>", tag_widths[1])
+  endif
+  return "\<BS>"
+endfunction
+
+function! s:IsMatchingTagPair()
+  return !empty(s:MatchingTagPairWidths())
 endfunction
 
 function! s:IsStructuralPair()
@@ -146,7 +159,7 @@ inoremap <expr> } <SID>ClosePair('}')
 inoremap <expr> <Char-34> <SID>QuotePair('"')
 " Single quote inserts or moves over a context-aware matching quote.
 inoremap <expr> ' <SID>QuotePair("'")
-" Backspace removes both characters when the cursor is inside an empty pair.
+" Backspace removes both sides of an empty character pair or adjacent tag pair.
 inoremap <expr> <BS> <SID>PairBackspace()
 " > closes tag-shaped text or moves over an existing tag delimiter.
 inoremap <expr> > <SID>CloseTag()

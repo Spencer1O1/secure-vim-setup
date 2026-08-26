@@ -66,20 +66,24 @@ provide editing defaults, recovery/history, syntax, indentation, and UI.
 - Persistent undo lives under `~/.vim/undo`.
 - Viminfo and netrw history use their normal locations and preserve useful
   commands, searches, marks, registers, and recently visited directories.
-- `clipboard=unnamedplus` matches the home setup when Vim has clipboard support.
-  On such builds, `<Leader>y` yanks a motion/selection, `<Leader>Y` yanks from the
-  cursor through line end, and `<Leader>yy` yanks the whole line directly to the
-  system clipboard. On builds reporting `-clipboard`, the same keys safely yank
-  to Vim's normal register instead of letting the unmapped Leader key move the cursor and
-  dropping the first character. Native system-clipboard access still requires
-  a Vim build with `+clipboard`. `<Leader><C-y>` yanks the entire file directly
-  to the system clipboard without moving the cursor; on `-clipboard` builds it
-  falls back to Vim's normal register, matching the other Leader-yank bindings.
-  Plain `<C-y>` keeps its normal Vim behavior because it is a different key
-  sequence.
 - A self-contained Tokyo Night-style palette needs no colorscheme files.
 - The cursor is a block in normal/visual mode, a bar in insert mode, and an
   underline in replace mode when the terminal supports cursor-shape escapes.
+
+## Yank and clipboard
+
+- `y` yanks a motion or visual selection, `yy` yanks the whole line, and `Y`
+  yanks from the cursor through line end.
+- Add `<Leader>` before any of those three commands to perform the same yank
+  using the system clipboard. With `-clipboard`, they use Vim's normal register
+  instead.
+- `<Leader><C-y>` yanks the entire file without moving the cursor. It uses the
+  system clipboard with `+clipboard` and Vim's normal register with
+  `-clipboard`. Plain `<C-y>` remains Vim's native scroll command because it is
+  a different key sequence.
+- On `+clipboard` builds, `Ctrl-c` copies a line/visual selection and `Ctrl-v`
+  pastes from the system clipboard. Native system-clipboard access still
+  requires a Vim build with `+clipboard`.
 
 ## Useful stock-Vim capabilities
 
@@ -99,12 +103,18 @@ provide editing defaults, recovery/history, syntax, indentation, and UI.
   filenames, `<C-x><C-f>` remains an explicit fallback.
 - HTML and XHTML use their bundled omni completer with standard tag-name
   results normalized to lowercase. XML remains case-sensitive and unchanged.
-- `<Leader>e` opens netrw in the current window. Inside netrw, `<Esc>` returns
-  to the previously edited file without selecting an entry.
+- `<Leader>e` opens netrw in the current window. Inside netrw, `<Enter>` opens a
+  file or enters a directory, `-` goes to the parent, and `<Esc>` returns to the
+  previously edited file without selecting an entry. `%`/`d` create a file or
+  directory, `R`/`D` rename or delete, `i` cycles layouts, `s`/`r` change or
+  reverse sorting, and `gh` toggles dotfiles. `mf` marks a file, `mu` clears all
+  marks, `mt` sets the target directory, and `mc`/`mm` copy or move marked files.
 - Insert mode automatically pairs `()`, `[]`, `{}`, `""`, and `''`. Typing an
   existing closer moves over it, and Backspace inside an empty pair removes both
-  characters. Typing `>` after a tag-shaped `<name...` inserts its matching
-  closing tag in every filetype except `c` and `cpp`; edit
+  characters. Backspace between adjacent matching tags such as
+  `<div>|</div>` removes both complete tags; multiline tag structures keep
+  normal indentation behavior. Typing `>` after a tag-shaped `<name...` inserts
+  its matching closing tag in every filetype except `c` and `cpp`; edit
   `g:tag_autoclose_blacklist` to add exclusions. Closing tags, self-closing
   tags, quoted attribute values, and HTML void elements are left alone.
 - Pressing Enter between `()`, `[]`, `{}`, or matching opening/closing tags
