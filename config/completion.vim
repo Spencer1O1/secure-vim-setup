@@ -4,7 +4,7 @@ if exists('*preinserted')
   set completeopt=menuone,preinsert
   highlight default link PreInsert Comment
 else
-  " Select the first item so Ctrl-F can accept it on Vim 8/9.1.
+  " Select the first item so Ctrl-f can accept it on Vim 8/9.1.
   set completeopt=menuone,noinsert
 endif
 
@@ -154,9 +154,9 @@ function! s:EscapeCompletion()
   return "\<Esc>"
 endfunction
 
-" Ctrl-N opens contextual completion or selects the next visible candidate.
+" Ctrl-n opens contextual completion or selects the next visible candidate.
 inoremap <expr> <C-n> <SID>SmartComplete()
-" Ctrl-F accepts the selected candidate; otherwise it keeps Vim's default.
+" Ctrl-f accepts the selected candidate; otherwise it keeps Vim's default.
 inoremap <expr> <C-f> <SID>AcceptCompletion()
 " Escape cancels a visible menu, or exits insert mode when no menu is visible.
 inoremap <expr> <Esc> <SID>EscapeCompletion()

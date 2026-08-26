@@ -1,7 +1,7 @@
 # Closed-intranet Vim setup
 
 This is a plugin-free translation of the Neovim setup in
-`C:\Users\spencerls\dotfiles\nvim`. It targets ordinary Vim 8/9 and does not
+`dotfiles`. It targets ordinary Vim 8/9 and does not
 download anything, run telemetry, call AI services, or invoke shell commands at
 startup.
 
@@ -9,6 +9,9 @@ It assumes the workstation, user profile, repositories, and system clipboard
 are all inside the authorized environment. Normal Vim recovery and history are
 therefore enabled. Software approval still governs third-party plugins and
 external tools.
+
+Key notation uses `<Leader>` rather than hardcoding its physical key. This
+configuration currently sets Leader to Space with `let mapleader = " "`.
 
 ## Retype it safely
 
@@ -35,17 +38,17 @@ provide editing defaults, recovery/history, syntax, indentation, and UI.
 
 | Neovim feature | Stock Vim replacement | Main keys |
 | --- | --- | --- |
-| Telescope files/buffers/help | `:find`, `:buffer`, `:help` with tab completion | `<Space>f`, `<Space>b`, `<Space>?` |
-| Telescope live grep | approved local `git grep` through quickfix | `<Space>/`, `<Space>i`, `[i`, `]i`, `<Space>I` |
-| Oil | bundled netrw | `<Space>e` |
-| Harpoon | global marks H/J/K/L | `mh/mj/mk/ml`, `<C-h/j/k/l>`, `<Space>h`, `<Space>hc` |
-| Trouble | quickfix and location-list windows | `<Space>I`, `<Space>O`, `[i/o`, `]i/o` |
+| Telescope files/buffers/help | `:find`, `:buffer`, `:help` with tab completion | `<Leader>f`, `<Leader>b`, `<Leader>?` |
+| Telescope live grep | approved local `git grep` through quickfix | `<Leader>/`, `<Leader>i`, `[i`, `]i`, `<Leader>I` |
+| Oil | bundled netrw | `<Leader>e` |
+| Harpoon | global marks H/J/K/L | `mh/mj/mk/ml`, `<C-h/j/k/l>`, `<Leader>h`, `<Leader>hc` |
+| Trouble | quickfix and location-list windows | `<Leader>I`, `<Leader>O`, `[i/o`, `]i/o` |
 | todo-comments | forward/backward regex search | `[t`, `]t` |
-| Undotree | built-in undo list | `<Space>u`, then normal `:earlier`/`:later` |
+| Undotree | built-in undo list | `<Leader>u`, then normal `:earlier`/`:later` |
 | LSP definitions | generated tags | `gd`, `gD`, `<C-t>` to return |
-| LSP references | exact-word local grep | `<Space>i` |
+| LSP references | exact-word local grep | `<Leader>i` |
 | cmp path/buffer completion | Unified built-in completion UI | `<C-n>/<C-p>` navigate, `<C-f>` accept |
-| Conform formatting | Vim's indent expression | `<Space>lf` |
+| Conform formatting | Vim's indent expression | `<Leader>lf` |
 | Treesitter highlighting/indent | bundled syntax and filetype scripts | automatic |
 | diff navigation | Vim diff navigation | `[d`, `]d` |
 
@@ -64,9 +67,16 @@ provide editing defaults, recovery/history, syntax, indentation, and UI.
 - Viminfo and netrw history use their normal locations and preserve useful
   commands, searches, marks, registers, and recently visited directories.
 - `clipboard=unnamedplus` matches the home setup when Vim has clipboard support.
-  On such builds, `<Space>y` yanks a motion/selection and `<Space>Y` yanks the
-  current line directly to the system clipboard. Builds reporting `-clipboard`
-  cannot provide these mappings natively.
+  On such builds, `<Leader>y` yanks a motion/selection, `<Leader>Y` yanks from the
+  cursor through line end, and `<Leader>yy` yanks the whole line directly to the
+  system clipboard. On builds reporting `-clipboard`, the same keys safely yank
+  to Vim's normal register instead of letting the unmapped Leader key move the cursor and
+  dropping the first character. Native system-clipboard access still requires
+  a Vim build with `+clipboard`. `<Leader><C-y>` yanks the entire file directly
+  to the system clipboard without moving the cursor; on `-clipboard` builds it
+  falls back to Vim's normal register, matching the other Leader-yank bindings.
+  Plain `<C-y>` keeps its normal Vim behavior because it is a different key
+  sequence.
 - A self-contained Tokyo Night-style palette needs no colorscheme files.
 - The cursor is a block in normal/visual mode, a bar in insert mode, and an
   underline in replace mode when the terminal supports cursor-shape escapes.
@@ -89,7 +99,7 @@ provide editing defaults, recovery/history, syntax, indentation, and UI.
   filenames, `<C-x><C-f>` remains an explicit fallback.
 - HTML and XHTML use their bundled omni completer with standard tag-name
   results normalized to lowercase. XML remains case-sensitive and unchanged.
-- `<Space>e` opens netrw in the current window. Inside netrw, `<Esc>` returns
+- `<Leader>e` opens netrw in the current window. Inside netrw, `<Esc>` returns
   to the previously edited file without selecting an entry.
 - Insert mode automatically pairs `()`, `[]`, `{}`, `""`, and `''`. Typing an
   existing closer moves over it, and Backspace inside an empty pair removes both
@@ -101,10 +111,15 @@ provide editing defaults, recovery/history, syntax, indentation, and UI.
   expands them to three lines, indents the cursor one `shiftwidth`, and aligns
   the closer with the opener. If completion is visible, Enter cancels it first.
 - `mh`, `mj`, `mk`, and `ml` set cross-file global marks H/J/K/L. The matching
-  Ctrl key jumps to the exact stored location; `<Space>h` lists them and
-  `<Space>hc` clears them.
-- A project-generated `tags` file enables `gd`/`gD`. Do not add a tag generator
-  unless that executable and workflow are approved.
+  Ctrl key jumps to the exact stored location; `<Leader>h` lists them and
+  `<Leader>hc` clears them.
+- A project-generated `tags` file is a static index from symbol names to source
+  locations. Vim searches for `tags` in the file's directory and its ancestors;
+  it does not create the index. `gd` jumps immediately when one definition
+  matches and prompts when several match, while `gD` always shows the match list
+  first. `<C-t>` returns from either jump. These preserve the home LSP muscle
+  memory; Git remains a separate `<Leader>g` namespace in the home setup. Do not
+  add a tag generator unless that executable and workflow are approved.
 - `:set paste` can help when pasting is permitted; turn it back off with
   `:set nopaste` immediately afterward.
 
