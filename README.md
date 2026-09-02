@@ -21,10 +21,11 @@ configuration currently sets Leader to Space with `let mapleader = " "`.
 2. Retype [`vimrc`](./vimrc) as `~/.vimrc` (or `$HOME/_vimrc` on Windows).
 3. Retype the files under [`config`](./config) into `~/.vim/config`, preserving
    these names: `options.vim`, `theme.vim`, `mappings.vim`, `completion.vim`,
-   and `pairs.vim`. Comments beginning with `"` are optional.
-4. After completing each module, open it in Vim and run `:source %`. After all
-   five exist, run `:source ~/.vimrc`. Fix the first reported line before
-   continuing.
+   `pairs.vim`, and the `pairs/` directory (`brackets.vim`, `tags.vim`,
+   `rename.vim`). Comments beginning with `"` are optional.
+4. After completing each module, open it in Vim and run `:source %`. After the
+   top-level modules exist, run `:source ~/.vimrc`. Fix the first reported line
+   before continuing. `pairs.vim` sources `pairs/` itself.
 5. Run `:version`, `:scriptnames`, and `:checkhealth` only if available.
    (`:checkhealth` is normally Neovim-only.)
 6. Open a disposable file and test save, search, quickfix, explorer, pins, and
@@ -112,11 +113,14 @@ provide editing defaults, recovery/history, syntax, indentation, and UI.
 - Insert mode automatically pairs `()`, `[]`, `{}`, `""`, and `''`. Typing an
   existing closer moves over it, and Backspace inside an empty pair removes both
   characters. Backspace between adjacent matching tags such as
-  `<div>|</div>` removes both complete tags; multiline tag structures keep
-  normal indentation behavior. Typing `>` after a tag-shaped `<name...` inserts
+  `<div>|</div>` removes both complete tags. On the empty line between a
+  split pair (`<div>` / `</div>` or `{` / `}`), Backspace joins them back
+  onto one line. Typing `>` after a tag-shaped `<name...` inserts
   its matching closing tag in every filetype except `c` and `cpp`; edit
   `g:tag_autoclose_blacklist` to add exclusions. Closing tags, self-closing
   tags, quoted attribute values, and HTML void elements are left alone.
+  Editing a tag name updates its matching partner (`<div>` ↔ `</div>`),
+  including nested tags of the same name.
 - Pressing Enter between `()`, `[]`, `{}`, or matching opening/closing tags
   expands them to three lines, indents the cursor one `shiftwidth`, and aligns
   the closer with the opener. If completion is visible, Enter cancels it first.
