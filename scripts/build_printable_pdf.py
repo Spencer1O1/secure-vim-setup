@@ -340,8 +340,8 @@ def add_cheat_sheet(story: list, styles: dict[str, ParagraphStyle]) -> None:
                 ("-clipboard", "Leader yanks use normal register"),
             ]),
             ("Completion and insert", [
-                ("Ctrl-n", "Open menu or select next candidate"),
-                ("Ctrl-p", "Select previous menu candidate"),
+                ("Ctrl-n", "Open menu on first item, or next"),
+                ("Ctrl-p", "Open menu on first item, or previous"),
                 ("Ctrl-f", "Accept selected completion"),
                 ("Esc", "Dismiss menu; otherwise leave Insert mode"),
                 ("Enter", "Newline; expands empty pairs/tags"),

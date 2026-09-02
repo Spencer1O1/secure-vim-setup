@@ -94,9 +94,9 @@ provide editing defaults, recovery/history, syntax, indentation, and UI.
 - `:set omnifunc?` shows whether the bundled filetype runtime provides omni
   completion. Vim 9.2+ opens a single menu with no configured delay, combining
   paths, omni results, tags, and buffer words in that priority order. Path
-  entries are marked `[path]`. Use `<C-n>/<C-p>` to
-  navigate, `<C-f>` to accept, and `<C-e>` or `<Esc>` to dismiss while staying
-  in insert mode. With no menu visible, `<Esc>` leaves insert mode. Highlighted
+  entries are marked `[path]`. `<C-n>` and `<C-p>` open the menu on the first
+  item, or move when it is already open. `<C-f>` accepts. `<Esc>` dismisses
+  the menu and stays in insert; with no menu, it leaves insert. Highlighted
   preinserted text provides a ghost-text-like preview.
 - Vim 8 and 9.1 use a zero-delay timer fallback to open the same contextual
   menu automatically. These versions cannot show native ghost text. If Vim was

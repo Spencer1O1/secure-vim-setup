@@ -116,16 +116,43 @@ if exists('+autocomplete')
   let &l:complete = s:complete_sources
 endif
 
-function! s:SmartComplete()
-  if pumvisible()
+function! s:StartCompleteKeys()
+  if exists('+autocomplete')
     return "\<C-n>"
-  elseif s:LooksLikePath(strpart(getline('.'), 0, col('.') - 1))
+  endif
+
+  let before = strpart(getline('.'), 0, col('.') - 1)
+
+  if s:LooksLikePath(before)
     return "\<C-x>\<C-f>"
-  elseif !empty(&l:omnifunc)
+  endif
+
+  if !empty(&l:omnifunc)
     return "\<C-x>\<C-o>"
   endif
 
   return "\<C-n>"
+endfunction
+
+" Open the menu with the first item selected. Extra C-n is only for
+" menuone,noinsert (Vim 8/9.1); preinsert already highlights the first match.
+function! s:OpenMenu()
+  let keys = s:StartCompleteKeys()
+
+  if !exists('*preinserted')
+    let keys .= "\<C-n>"
+  endif
+
+  call feedkeys(keys, 'n')
+  return ''
+endfunction
+
+function! s:OpenOrMove(forward)
+  if pumvisible()
+    return a:forward ? "\<Down>" : "\<Up>"
+  endif
+
+  return s:OpenMenu()
 endfunction
 
 " Vim 8/9.1 fallback for Vim 9.2's native 'autocomplete' option.
@@ -151,7 +178,7 @@ function! s:LegacyAutoComplete(timer)
         \ || s:LooksLikePath(before)
         \ || !empty(&l:omnifunc)
     let b:last_autocomplete_context = context
-    call feedkeys("\<C-n>", 'm')
+    call s:OpenMenu()
   endif
 endfunction
 
@@ -195,15 +222,13 @@ function! s:AcceptCompletion()
   return "\<C-y>"
 endfunction
 
-" Ctrl-n opens contextual completion or selects the next visible candidate.
-inoremap <expr> <C-n> <SID>SmartComplete()
+" Ctrl-n / Ctrl-p open the menu on the first item, then move.
+inoremap <expr> <C-n> <SID>OpenOrMove(1)
+inoremap <expr> <C-p> <SID>OpenOrMove(0)
 
 " Ctrl-f accepts the selected candidate; otherwise it keeps Vim's default.
 inoremap <expr> <C-f> <SID>AcceptCompletion()
 
-" IMPORTANT:
-" Do not map <Esc> in Insert mode.
-"
-" Terminal special keys such as arrows may be encoded as sequences beginning
-" with Escape. Mapping raw <Esc> can cause Vim to consume the first byte and
-" leave characters such as A/B/C/D behind as literal input.
+" Esc dismisses the menu and stays in Insert. ttimeout/ttimeoutlen in
+" options.vim keep arrow keys (Esc-prefixed sequences) intact.
+inoremap <expr> <Esc> pumvisible() ? "\<C-e>" : "\<C-\>\<C-n>"
